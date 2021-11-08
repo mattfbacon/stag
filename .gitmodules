@@ -1,0 +1,13 @@
+[submodule "lib/magic_enum"]
+	path = lib/magic_enum
+	url = https://github.com/Neargye/magic_enum.git
+[submodule "lib/cryptopp/cryptopp"]
+	path = lib/cryptopp/cryptopp
+	url = https://github.com/weidai11
+	ignore = untracked
+[submodule "lib/cryptopp/cryptopp-cmake"]
+	path = lib/cryptopp/cryptopp-cmake
+	url = https://github.com/noloader/cryptopp-cmake
+[submodule "lib/PEGTL"]
+	path = lib/pegtl
+	url = https://github.com/taocpp/PEGTL

@@ -1,0 +1,194 @@
+# stag(1) -- manage file tagging using symlinks
+
+## SYNOPSIS
+
+_stag_ {-UQTRFVO} [options] [...targets]
+
+## DESCRIPTION
+
+There are many ways to manage files and tags. However, many of them are strongly coupled to a single tool, hard to manually manipulate, or don't work with existing tools.
+
+_stag_ (sometimes stylized as STag) is an alternative that uses a very simple directory structure to provide this functionality. It is slower in many cases, due to not having indexing, but prioritizes simplicity and can always be manipulated manually by the user without breaking the databases's self-consistency. In cases where mistakes are likely to occur, tools are provided (see [FIX OPERATION][]) to help resolve them.
+
+The S in STag can stand for many things, such as "simple", "symlink", or "straightforward".
+
+## OPERATIONS
+
+Note: detailed descriptions of each operation will follow.
+
+- `-U`
+  _Import_ external files into the tagging database.
+- `-Q`
+  _Query_ the database.
+- `-T`
+  Manage _file tags_.
+- `-R`
+  Manage tags themselves ("_tag meta_").
+- `-F`
+  _Fix_ possible issues.
+- `-V`
+  Manage _views_.
+- `-O`
+  _Open_ tags, views, or files.
+
+## IMPORT OPERATION
+
+`stag -U [{-t --tags} tag,tag,tag] [-rn] [...external files]`
+
+- `{-t --tags} tag,tag,tag`
+  Tags to be added to all imported files. Comma-separated.
+- `{-r --remove-source}`
+  Delete source files after importing.
+- `{-n --no-remove-source}`
+  (Default) Don't delete source files after importing.
+
+When tags are provided with `-t`, the order in which the files are tagged is undefined.
+
+(If this behavior proves to be insufficient or confusing, it may be changed in a future release to respect the order in which the files were specified on the command line.)
+
+## QUERY OPERATION
+
+`stag -Q [-ts] [...files]`
+
+- `{-t --list-tags}`
+  (Default) With no file arguments, list all tags. With one file argument, list the tags that that file has. With more than one file argument, show a summary with counts.
+- `{-s --stats}`
+  Show general statistics. File arguments are ignored.
+  The statistics shown are number of files, number of tags, average number of files per tag, and total number of file-to-tag associations.
+
+(More information may be added in future releases. Each datum will be on its own line with a unique label.)
+
+## FILE TAGS OPERATION
+
+`stag -T {-t [-u [-rn]]} [...tags and files]`
+
+- `{-t --tag}`
+  (Default) Add tags.
+- `{-u --untag}`
+  Remove tags instead of adding them.
+- `{-r --renumber}`
+  (Default) Do renumber the files after untagging them.
+- `{-n --no-renumber}`
+  Don't renumber the files after untagging them.
+
+## TAG META OPERATION
+
+`stag -R [-cdm] [...tags]`
+
+- `{-c --create} [...tags]` (default)
+  Create tags with no files.
+- `{-d --remove --delete} [...tags]`
+  Remove/delete tags.
+- `{-m --rename} <old tag name> <new tag name>`
+  Rename a tag. Expects exactly two arguments, the old name and the new name.
+
+The operation flags are processed strictly in sequence. For example, `stag -R tag tag tag -d` does not delete the tags, but creates them! This is because the operation flags are sticky, and the default operation is creation.
+
+(If the default of creation proves to be confusing, it may be removed in a future release.)
+
+## FIX OPERATION
+
+`stag -F {-rb} [-f] [-v] [...tags]`
+
+- `{-r --renumber}`
+  Renumber all files in all tags.
+- `{-b --broken}`
+  Find and fix broken links with an interactive tool.
+- `{-f --force}`
+  When used with `--broken`, rather than asking what to do, delete all broken links.
+- `{-v --inverse}`
+  Fix all tags other than the specified, rather than only them
+- `[...tags]
+  The tags to fix (or not). No tags = all.
+
+## VIEWS OPERATION
+
+`stag -V [-f] [...viewspecs]`
+
+- `[-f]`
+  Always recompute the view contents, even for views that are newer than the tags directory.
+- `[...viewspecs]`
+  The views to create
+
+## OPEN OPERATION
+
+`stag -O [-cn] [...tags, viewspecs, files]`
+
+- `{-c --clean}`
+  (Default) Delete views after they are closed.
+- `{-n --no-clean}`
+  Don't delete views after they are closed.
+- `[...tags, viewspecs, files]`
+  Providing a tag shows the files with that tag.
+  Providing a viewspec shows the files matching the view, creating the view if necessary.
+  Providing a file shows that file individually.
+
+## ABBREVIATIONS
+
+Files (once imported) can be abbreviated in a few ways:
+
+- `fullHash.`
+  Matches the file that has the specified hash, with any extension.
+- `abbrHash.ext`
+  Matches the file whose hash starts with the hash, with the specified extension (extensions cannot be abbreviated).
+- `abbrHash.`
+  Matches the file whose hash starts with the hash, with any extension.
+
+If an abbreviation proves to be ambiguous, the program will output a diagnostic error and exit.
+
+## VIEWSPECS
+
+A _viewspec_ is a way of describing a view using human-readable syntax. It resembles an expression in a language like C.
+Following are a few examples of viewspecs with explanations and plain text descriptions:
+
+- `tag1`
+  A tag is the basic predicate; matches anything with `tag1`
+- `~tag1`
+  "Not" operator matches anything not matching the predicate; matches anything without `tag1`
+- `tag1 & tag2`
+  "And" operator matches anything matching both predicates; matches anything with both `tag1` and `tag2`
+- `tag1 | tag2`
+  "Or" operator matches anything matching either predicate; matches anything with either `tag1` or `tag2` (or both)
+- `(tag1 & tag2) | tag`
+  Parentheses can be used for grouping; matches anything that has both `tag1` and `tag2`, or has `tag3` (regardless of having `tag1` or `tag2`)
+- `tag1 | file1`
+  Files are also basic predicates; adds `file1` to the result set
+- `tag1 & ~file1`
+  "And not" excludes something from the result; removes `file1` from the result set
+- `x + y`
+  Alias for `x | y`
+- `x - y`
+  Alias for `x & ~y`
+- `!x`
+  Alias for `~x`
+
+Spaces within tags are preserved, but spaces around tags are not. In the viewspec `abc def + ghi jkl`, the tags are `abc def` and `ghi jkl`.
+
+Using these simple predicates, much more complicated queries can be performed.
+
+## SLOW OPERATIONS
+
+Due to the nature of the database, tags are one-way mappings, from a tag to the set of files that has that tag.
+As a result of this, adding a tag to a file is `O(1)`, but removing a tag from a file is `O(n)` where `n` is the number of files that already have the tag, because it may be necessary to search through the entire tag directory to find the link that points to a given file.
+
+Finding all the tags a file has is also quite a slow operation (`O(n^2)`).
+However, speeding up this operation would require indexing, which can quickly become invalid when the data is easily modified by the user.
+
+## HOW TO OPTIMIZE
+
+That said, small changes in behavior may be helpful in speeding up some of these operations.
+For example, rather than removing a tag from a file using the file name in a call to `stag -Tu`, if you already know the index of the file in the tag directory, and don't want to renumber (which is also `O(n)`, so you might as well use `stag -Tu`) you can simply remove (unlink) that link in the tag directory.
+
+Since you can do some operations more efficiently if you do, knowing the underlying structure of the database can be quite useful. More information about the database can be found in `stag`(5).
+
+## AUTHOR
+
+Matt Fellenz
+
+## COPYRIGHT
+
+License: AGPL-3.0-or-later
+
+## SEE ALSO
+
+`stag`(5)

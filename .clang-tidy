@@ -1,0 +1,1 @@
+Checks: '-*,bugprone-*,cert-*,clang-analyzer-*,llvm-*,misc-*,modernize-*,openmp-*,performance-*,portability-*,readability-*,-modernize-use-trailing-return-type,-misc-non-private-member-variables-in-classes,-cert-err58-cpp,-modernize-use-nullptr,-llvm-else-after-return,-readability-else-after-return,-llvm-namespace-comment,-llvm-header-guard,-bugprone-easily-swappable-parameters'

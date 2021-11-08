@@ -1,0 +1,71 @@
+# stag(5) -- structure of an STag directory
+
+## SYNOPSIS
+
+A database looks something like this:
+
+    (root)
+    L all
+    | L (all files, named with their hashes...)
+    L tags
+    | L (tag names...)
+    |   L 1 -> ../../all/(hash).ext
+    |   L 2 -> ../../all/(other hash).ext
+    |   L (...)
+    L views
+    | L (viewspecs...)
+    |   L 1 -> ../../all/(hash).ext
+    |   L (...)
+    L .stagspace (empty file; carte-blanche for STag to mess with directory contents)
+
+The actual files are stored in `all`, and links in tag and view subdirectories serve to store the files that have a given tag/are in a given view. More detail follows.
+
+## FILES
+
+A _file_ is the unique reference to an OS file in `all`.
+
+Upon importing an external file, the following procedure is used to determine the filename:
+
+1. Get the file extension, that is, the text after the last dot in the filename. Call it `ext`.
+2. Take the Blake2b hash with 20 bytes of digest (40 hex chars) of the file. Call it `hash`.
+3. The filename is `hash`.`ext`.
+
+By using the hash for the name portion, the filename is consistent and reproducible.
+
+Additionally, as a convenience, the file extension `.jpeg` is automatically converted to `.jpg`.
+
+## TAGS
+
+A _tag_ is a directory in `tags` with zero or more relative symbolic links to a file in `all`.
+The name of a tag cannot be `.` or `..` and cannot include a comma (`,`) or a forward slash (`/`), but can include spaces. Be careful, because these conditions are not necessarily checked in all cases.
+Whether the names are case-sensitive depends on your filesystem, but the vast majority of filesystems (NTFS and ReFS are two exceptions, but who's using those on Linux?) are case-sensitive.
+
+The names of the links in a tag directory are numbered starting at 1, with no zero-padding.
+The numbers typically match the insertion order of files into the tag directory, but can be arbitrary.
+
+## RENUMBERING
+
+When a tag is removed from a file, there is a high likelihood that the tag directory will be left sparse, that is, with gaps in the numbering scheme.
+_Renumbering_ means taking all of the items in a tag directory and numbering them starting from 1, in order to remove these gaps.
+In general having gaps is fine, because the gap will be filled the next time a file is given that tag.
+That said, the default behavior when removing a tag is to also renumber, since they can both be done at once. See `stag`(1) for more information about this.
+
+## VIEWS
+
+A _view_ is not a tag per se, but is stored in the same way. It's a directory in `views`.
+
+The contents of a view are produced on demand, and can be safely deleted.
+The contents of a view do not stay up-to-date after changing tags, but do stay valid.
+This is because they link directly to files in `all` rather than daisy-chaining through `tags`.
+
+## AUTHOR
+
+Matt Fellenz
+
+## COPYRIGHT
+
+License: AGPL-3.0-or-later
+
+## SEE ALSO
+
+`stag`(1)
