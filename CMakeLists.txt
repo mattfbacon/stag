@@ -29,6 +29,7 @@ set (sources
 	Errors/Commands.cpp
 	Filesystem/FilesSet.cpp
 	Logic/TagsIterator.cpp
+	Logic/TagIterator.cpp
 	Logic/AllDirectory.cpp
 	Logic/TagDirectory.cpp
 	Logic/TagsSet.cpp
