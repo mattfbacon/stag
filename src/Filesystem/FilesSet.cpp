@@ -5,14 +5,46 @@
 
 namespace Filesystem {
 
-std::pair<decltype(FilesSet::_impl)::iterator, bool> FilesSet::insert(std::filesystem::path const& path) {
+FilesSet::value_type FilesSet::normalize(value_type const& p) {
+	return std::filesystem::absolute(p.lexically_normal());
+}
+
+std::pair<FilesSet::iterator, bool> FilesSet::insert(value_type const& path) {
 	return _impl.insert(normalize(path));
 }
-decltype(FilesSet::_impl)::iterator FilesSet::insert(decltype(_impl)::const_iterator const& iter, std::filesystem::path const& path) {
+FilesSet::iterator FilesSet::insert(decltype(_impl)::const_iterator const& iter, value_type const& path) {
 	return _impl.insert(iter, normalize(path));
 }
-std::pair<decltype(FilesSet::_impl)::iterator, bool> FilesSet::insert_expanded(std::string_view const abbr) {
+std::pair<FilesSet::iterator, bool> FilesSet::insert_expanded(std::string_view const abbr) {
 	return _impl.insert(normalize(Logic::AllDirectory::expand_file_abbreviation(abbr)));
+}
+
+size_t FilesSet::size() const {
+	return _impl.size();
+}
+bool FilesSet::empty() const {
+	return _impl.empty();
+}
+FilesSet::iterator FilesSet::begin() {
+	return _impl.begin();
+}
+FilesSet::iterator FilesSet::end() {
+	return _impl.end();
+}
+FilesSet::const_iterator FilesSet::begin() const {
+	return _impl.begin();
+}
+FilesSet::const_iterator FilesSet::end() const {
+	return _impl.end();
+}
+FilesSet::iterator FilesSet::find(value_type const& item) {
+	return _impl.find(normalize(item));
+}
+FilesSet::const_iterator FilesSet::find(value_type const& item) const {
+	return _impl.find(normalize(item));
+}
+bool FilesSet::contains(value_type const& item) const {
+	return _impl.contains(normalize(item));
 }
 
 FilesSet FilesSet::invert() const {
@@ -58,6 +90,12 @@ FilesSet FilesSet::operator-(FilesSet const& other) const {
 		}
 	}
 	return ret;
+}
+
+FilesSet::FilesSet(std::initializer_list<value_type> items) {
+	for (auto const& item : items) {
+		_impl.insert(normalize(item));
+	}
 }
 
 }  // namespace Filesystem
