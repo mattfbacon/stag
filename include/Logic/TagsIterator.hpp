@@ -15,37 +15,18 @@ protected:
 	value_t storage;
 	TagsIterator(decltype(handle) a_handle, decltype(storage) a_storage) : handle(std::move(a_handle)), storage(std::move(a_storage)) {}
 public:
-	TagsIterator() : handle{ Filesystem::path_tags }, storage(handle != decltype(handle){} ? value_t::from_path(handle->path()) : value_t{}) {}
-	static TagsIterator end() {
-		return TagsIterator{ decltype(handle){}, value_t{} };
-	}
-	bool empty() {
-		return handle == decltype(handle){};
-	}
-	TagsIterator& operator++() {
-		handle++;
-		// check for end (ADL)
-		if (handle != decltype(handle){}) {
-			storage = value_t::from_path(handle->path());
-		}
-		return *this;
-	}
-	value_t& operator*() {
-		return storage;
-	}
-	value_t* operator->() {
-		return &storage;
-	}
-	bool operator!=(TagsIterator const& other) {
-		return handle != other.handle;
-	}
+	TagsIterator();
+	static TagsIterator end();
+	bool empty();
+	TagsIterator& operator++();
+	value_t& operator*();
+	value_t* operator->();
+	value_t const& operator*() const;
+	value_t const* operator->() const;
+	bool operator!=(TagsIterator const& other) const;
 };
 
-inline TagsIterator& begin(TagsIterator& x) {
-	return x;
-}
-inline TagsIterator end(TagsIterator const& /* unused */) {
-	return TagsIterator::end();
-}
+TagsIterator& begin(TagsIterator& x);
+TagsIterator end(TagsIterator const& x);
 
 }  // namespace Logic
