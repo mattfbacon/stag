@@ -2,14 +2,18 @@
 
 set -l progname stag
 
+function __fish_stag_is_stagspace
+    test -d tags && test -d all && test -d views && test -f .stagspace
+end
+
 function __fish_stag_list_tags
-    test -d tags && find tags -mindepth 1 -maxdepth 1 -type d -printf '%P\n' || return 0
+    __fish_stag_is_stagspace && find tags -mindepth 1 -maxdepth 1 -type d -printf '%P\n' || return 0
 end
 function __fish_stag_list_files
-    test -d all && find all -mindepth 1 -maxdepth 1 -type f -printf '%P\n' || return 0
+     __fish_stag_is_stagspace && find all -mindepth 1 -maxdepth 1 -type f -printf '%P\n' || return 0
 end
 function __fish_stag_list_views
-    test -d views && find views -mindepth 1 -maxdepth 1 -type d -printf '%P\n' || return 0
+    __fish_stag_is_stagspace && find views -mindepth 1 -maxdepth 1 -type d -printf '%P\n' || return 0
 end
 set -l list_tags "(__fish_stag_list_tags)"
 set -l list_files "(__fish_stag_list_files)"
