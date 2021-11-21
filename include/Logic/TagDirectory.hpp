@@ -13,8 +13,6 @@
 
 namespace Logic {
 
-using tag_index_t = size_t;
-
 class TagDirectory {
 protected:
 	tag_index_t current_number = 0;
