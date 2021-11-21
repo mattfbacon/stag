@@ -13,10 +13,15 @@ class TagDirectory;
 class TagIterator {
 protected:
 	std::filesystem::directory_iterator handle;
-	TagIterator() = default;  // default-constructed = end iter
-	explicit TagIterator(std::filesystem::path const& path) : handle(path) {}
 	static bool is_tagged_file(std::filesystem::directory_entry const& entry) {
 		return entry.is_symlink();
+	}
+	TagIterator() = default;  // default-constructed = end iter
+	explicit TagIterator(std::filesystem::path const& path) : handle(path) {
+		auto const end_iter = std::filesystem::end(handle);
+		while (handle != end_iter && !is_tagged_file(*handle)) {
+			++handle;
+		}
 	}
 public:
 	TagIterator& operator++() {
