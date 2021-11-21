@@ -54,7 +54,11 @@ Result Import::long_option_callback(std::string_view const option_name) {
 }
 
 void Import::long_option_argument_callback(std::string_view const option_name, std::string_view value) {
+#if !defined(NDEBUG)
 	assert(option_name == "tags");
+#else
+	(void)option_name;
+#endif
 	short_option_argument_callback('t', value);
 }
 
