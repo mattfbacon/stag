@@ -17,6 +17,17 @@ void TagDirectory::find_next_number() {
 	} while (std::filesystem::exists(num_path));
 }
 
+std::filesystem::path TagDirectory::index_to_path(tag_index_t const idx) const {
+	return this_tag_path / std::to_string(idx);
+}
+std::filesystem::path TagDirectory::current_path() const {
+	return index_to_path(current_number);
+}
+
+bool TagDirectory::valid() const {
+	return !this_tag_path.empty();
+}
+
 TagDirectory::TagDirectory(std::filesystem::path a_this_tag_path, std::string a_tag_name)
 	: this_tag_path(std::move(a_this_tag_path)), tag_name(std::move(a_tag_name)) {
 	std::filesystem::create_directory(this_tag_path);
@@ -25,8 +36,21 @@ TagDirectory::TagDirectory(std::filesystem::path a_this_tag_path, std::string a_
 
 TagDirectory::TagDirectory(std::string&& a_tag_name) : TagDirectory{ Filesystem::path_tags / a_tag_name, std::move(a_tag_name) } {}
 
+TagDirectory TagDirectory::from_path(std::filesystem::path actual_directory) {
+	auto given_tag_name = actual_directory.filename().string();
+	return { std::move(actual_directory), std::move(given_tag_name) };
+}
+
 bool TagDirectory::exists(std::string_view const tag_name) {
 	return std::filesystem::exists(Filesystem::path_tags / tag_name);
+}
+
+std::filesystem::path TagDirectory::dereference(std::filesystem::path const& file) const {
+	return this_tag_path / std::filesystem::read_symlink(file);
+}
+
+std::string const& TagDirectory::name() const {
+	return tag_name;
 }
 
 TagDirectory::RemoveResult TagDirectory::remove(std::string_view const tag_name) {
@@ -82,6 +106,13 @@ std::optional<tag_index_t> TagDirectory::find_file(std::filesystem::path const& 
 	return std::nullopt;
 }
 
+bool TagDirectory::has_file(std::filesystem::path const& file_name) const {
+	return find_file(file_name).has_value();
+}
+
+tag_index_t TagDirectory::tag_file(std::string name_in_all, bool const ensure_uniqueness) {
+	return tag_file(Filesystem::path_all / std::move(name_in_all), ensure_uniqueness);
+}
 tag_index_t TagDirectory::tag_file(std::filesystem::path const& file_path, bool const ensure_uniqueness) {
 	if (ensure_uniqueness) {
 		if (auto const maybe_pos = find_file(file_path); maybe_pos.has_value()) {
@@ -187,6 +218,16 @@ void TagDirectory::strip_broken() {
 		++counters.current;
 		current_name_storage.replace_filename(std::to_string(counters.current));
 	}
+}
+
+TagIterator TagDirectory::begin() const {
+	return TagIterator{ this_tag_path };
+}
+TagIterator TagDirectory::end() const {  // NOLINT(readability-convert-member-functions-to-static)
+	return TagIterator{};
+}
+bool TagDirectory::empty() const {
+	return begin() != end();
 }
 
 std::optional<std::filesystem::path> TagDirectory::first_file() const {
