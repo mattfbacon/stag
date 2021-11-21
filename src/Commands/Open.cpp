@@ -105,6 +105,8 @@ void open_tag(std::string_view const tag_name) {
 	Logic::TagDirectory tag_dir{ tag_name };
 	if (auto const maybe_first_file = tag_dir.first_file(); maybe_first_file.has_value()) {
 		open_file(*maybe_first_file);
+	} else {
+		Logging::warning("Tag is empty, skipping: ", tag_name);
 	}
 }
 
@@ -121,6 +123,8 @@ void open_view(std::string_view const viewspec, bool const clean) {
 	View::View view{ viewspec, clean };
 	if (auto const view_begin = view.begin(); view_begin != view.end()) {
 		open_file(*view_begin);
+	} else {
+		Logging::warning("View is empty, skipping: ", viewspec);
 	}
 }
 
