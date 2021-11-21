@@ -235,7 +235,7 @@ std::optional<std::filesystem::path> TagDirectory::first_file() const {
 		return std::nullopt;
 	}
 	auto current_name_storage = index_to_path(0);
-	for (tag_index_t name = 1;; name++) {
+	for (tag_index_t name = 1;; ++name) {
 		current_name_storage.replace_filename(std::to_string(name));
 		if (std::filesystem::exists(current_name_storage)) {
 			return { std::move(current_name_storage) };

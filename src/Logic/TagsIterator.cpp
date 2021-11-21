@@ -11,7 +11,7 @@ bool TagsIterator::empty() {
 	return handle == decltype(handle){};
 }
 TagsIterator& TagsIterator::operator++() {
-	handle++;
+	++handle;
 	if (handle != decltype(handle){}) {
 		storage = value_t::from_path(handle->path());
 	}
