@@ -1,4 +1,4 @@
-.PHONY: cmake debug release clean distclean install tidy cpplint cppcheck check
+.PHONY: cmake debug release clean distclean install uninstall tidy cpplint cppcheck check
 
 BUILD_DIR := build
 
@@ -16,7 +16,7 @@ debug release: %: $(BUILD_DIR)
 # hacky support for multiconfig generators
 	$(CMAKE) --build $(BUILD_DIR) --target $@ -- -v\
 		|| $(CMAKE) --build $(BUILD_DIR) --config $(shell echo $@ | python -c "print(input().capitalize())") -- -v
-clean distclean install: %: $(BUILD_DIR)
+clean distclean: %: $(BUILD_DIR)
 	$(CMAKE) --build $(BUILD_DIR) --target $@
 
 .DEFAULT_GOAL = release
@@ -39,3 +39,16 @@ cppcheck: $(ALLSOURCES)
 	cppcheck $^ --enable=all -q --suppress=unusedFunction --suppress=missingIncludeSystem -Iinclude -x c++ --inline-suppr
 
 check: cpplint cppcheck
+
+# can be overridden with an environment variable
+PREFIX := /usr/local
+
+install:
+	install -Dm 755 -s dist/Release/stag $(PREFIX)"/bin/stag"
+	install -Dm 644 dist/stag.1 $(PREFIX)"/share/man/man1/stag.1"
+	install -Dm 644 dist/stag.5 $(PREFIX)"/share/man/man5/stag.5"
+	install -Dm 644 stag.fish $(PREFIX)"/share/fish/vendor_completions.d/stag.fish"
+uninstall:
+	rm $(PREFIX)"/bin/stag"
+	rm $(PREFIX)"/share/man/man1/stag.1"
+	rm $(PREFIX)"/share/man/man5/stag.5"
