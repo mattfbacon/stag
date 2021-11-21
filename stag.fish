@@ -107,10 +107,10 @@ complete -c $progname -n "$op_tag_meta && __fish_stag_tag_meta_current_rename 0"
 complete -c $progname -n "$op_tag_meta && __fish_stag_tag_meta_current_rename 1" -x
 
 # Fix operation
-set -l op_fix_nosub "not __fish_contains_op -s r renumber -s b broken"
+set -l op_fix_nosub "not __fish_contains_opt -s r renumber -s b broken"
 complete -c $progname -n "$op_fix && $op_fix_nosub" -s r -l renumber -f -d 'Renumber links in tags'
 complete -c $progname -n "$op_fix && $op_fix_nosub" -s b -l broken -f -d 'Fix broken links interactively'
-complete -c $progname -n "$op_fix && __fish_contains_op -s b broken" -s f -l force -d 'Delete all broken links'
+complete -c $progname -n "$op_fix && __fish_contains_opt -s b broken" -s f -l force -d 'Delete all broken links'
 complete -c $progname -n "$op_fix && not $op_fix_nosub" -s v -l inverse -d 'Invert the filter'
 complete -c $progname -n "$op_fix" -d 'Tag' -xa $list_tags
 
@@ -119,7 +119,7 @@ complete -c $progname -n "$op_views" -s f -l force -f -d 'Always recompute view 
 complete -c $progname -n "$op_views" -d 'View' -xa $list_views
 
 # Open operation
-set -l op_open_clean_noclean 'not __fish_contains_op -s c clean -s n no-clean'
+set -l op_open_clean_noclean 'not __fish_contains_opt -s c clean -s n no-clean'
 complete -c $progname -n "$op_open && $op_open_clean_noclean" -s c -l clean -d 'Clean up views automatically'
 complete -c $progname -n "$op_open && $op_open_clean_noclean" -s n -l no-clean -d "Don't clean up views automatically"
 complete -c $progname -n "$op_open" -d 'Tag' -xa $list_tags
