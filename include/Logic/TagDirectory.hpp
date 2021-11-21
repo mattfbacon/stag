@@ -22,7 +22,7 @@ protected:
 	std::string tag_name;
 
 	void find_next_number();
-	std::filesystem::path index_to_path(tag_index_t const idx) {
+	std::filesystem::path index_to_path(tag_index_t const idx) const {
 		return this_tag_path / std::to_string(idx);
 	}
 	std::filesystem::path current_path() {
