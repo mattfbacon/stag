@@ -1,37 +1,49 @@
 #include "Logic/TagIterator.hpp"
 
+#include "util.hpp"
+
 namespace Logic {
 
-bool TagIterator::is_tagged_file(std::filesystem::directory_entry const& entry) {
-	return entry.is_symlink();
+TagIterator::TagIterator() {
+	current_index = 1;
+	num_tagged_files = 0;
+	// is_at_end() will now return true
 }
 
-TagIterator::TagIterator(std::filesystem::path const& path) : handle(path) {
-	auto const end_iter = std::filesystem::end(handle);
-	while (handle != end_iter && !is_tagged_file(*handle)) {
-		++handle;
+TagIterator::TagIterator(std::filesystem::path a_path) : item_path(std::move(a_path)) {
+	for (auto const& dirent : std::filesystem::directory_iterator{ item_path }) {
+		auto const dirent_name = dirent.path().filename().string();
+		if (dirent.is_symlink() && std::all_of(dirent_name.begin(), dirent_name.end(), util::char_traits::is_number)) {
+			++num_tagged_files;
+		}
 	}
+	item_path /= std::to_string(current_number);
+	this->operator++();
+}
+
+bool TagIterator::is_at_end() const {
+	return current_index > num_tagged_files;
 }
 
 TagIterator& TagIterator::operator++() {
-	auto const end_iter = std::filesystem::end(handle);
-	do {
-		++handle;
-		if (handle == end_iter) {
-			break;
-		}
-	} while (!is_tagged_file(*handle));
+	++current_index;
+	if (!is_at_end()) {
+		do {
+			++current_number;
+			item_path.replace_filename(std::to_string(current_number));
+		} while (!std::filesystem::exists(item_path));
+	}
 	return *this;
 }
 
 std::filesystem::path const& TagIterator::operator*() const {
-	return handle->path();
+	return item_path;
 }
 std::filesystem::path const* TagIterator::operator->() const {
-	return &(handle->path());
+	return &item_path;
 }
 bool TagIterator::operator!=(TagIterator const& other) const {
-	return handle != other.handle;
+	return is_at_end() != other.is_at_end();
 }
 
 }  // namespace Logic
