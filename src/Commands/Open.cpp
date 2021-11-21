@@ -84,8 +84,9 @@ void open_file(std::filesystem::path const& path) {
 	auto const pid = ::fork();
 	if (pid == 0) {  // child
 		auto path_str = path.string();
-		std::array<char*, 2> args{ path_str.data(), nullptr };
-		if (::execvp("xdg-open", args.data()) < 0) {
+		std::string prog_name = "xdg-open";
+		std::array<char*, 3> args{ prog_name.data(), path_str.data(), nullptr };
+		if (::execvp(prog_name.c_str(), args.data()) < 0) {
 			static constexpr int EXIT_COMMAND_INVOKED_CANNOT_EXECUTE = 126;
 			exit(EXIT_COMMAND_INVOKED_CANNOT_EXECUTE);
 		}
