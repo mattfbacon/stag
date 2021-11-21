@@ -100,6 +100,7 @@ public:
 	[[nodiscard]] bool empty() const {
 		return begin() != end();
 	}
+	[[nodiscard]] std::optional<std::filesystem::path> first_file() const;
 };
 
 }  // namespace Logic
