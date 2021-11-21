@@ -98,11 +98,14 @@ void renumber_tags(Logic::TagsSet const& tags, bool const inverse) {
  * I want this to be kind of like `git add -p`.
  * For each tag, for each broken link, we offer some choices for what to do.
  */
-void fix_broken_links(Logic::TagsSet const& _tags, bool const inverse, bool const force) {
-	(void)_tags;
-	(void)inverse;
-	(void)force;
-#warning "TODO"
+void fix_broken_links(Logic::TagsSet const& tags, bool const inverse, bool const force) {
+	if (!force) {
+		Logging::warning("-Fb without -f is not yet implemented");
+		return;
+	}
+	for_each_tag<true>(tags, inverse, [](Logic::TagDirectory& tag_dir) {
+		tag_dir.strip_broken();
+	});
 }
 
 }  // namespace

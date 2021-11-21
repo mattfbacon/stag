@@ -87,6 +87,7 @@ public:
 	void untag_file(tag_index_t index);
 
 	void renumber();
+	void strip_broken(); // also renumbers in the process
 
 	void rename(std::string_view new_name);
 
