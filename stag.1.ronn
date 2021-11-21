@@ -98,7 +98,7 @@ The operation flags are processed strictly in sequence. For example, `stag -R ta
   When used with `--broken`, rather than asking what to do, delete all broken links.
 - `{-v --inverse}`
   Fix all tags other than the specified, rather than only them
-- `[...tags]
+- `[...tags]`
   The tags to fix (or not). No tags = all.
 
 ## VIEWS OPERATION
