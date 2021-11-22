@@ -126,6 +126,6 @@ complete -c $progname -n "$op_views" -d 'View' -xa $list_views
 set -l op_open_clean_noclean 'not __fish_contains_opt -s c clean -s n no-clean'
 complete -c $progname -n "$op_open && $op_open_clean_noclean" -s c -l clean -d 'Clean up views automatically'
 complete -c $progname -n "$op_open && $op_open_clean_noclean" -s n -l no-clean -d "Don't clean up views automatically"
-complete -c $progname -n "$op_open" -d 'Tag' -xa $list_tags
-complete -c $progname -n "$op_open" -d 'File' -xa $list_files
-complete -c $progname -n "$op_open" -d 'View' -xa $list_views
+complete -c $progname -n "$op_open" -d 'File' -k -xa $list_files
+complete -c $progname -n "$op_open" -d 'View' -k -xa $list_views
+complete -c $progname -n "$op_open" -d 'Tag' -k -xa $list_tags
