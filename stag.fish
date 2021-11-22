@@ -44,7 +44,7 @@ complete -c $progname -s O -n "$op__none" -d 'Open tags, views, or files'
 complete -c $progname -n "$op_import" -s t -l tags -d 'Tags to be added to all imported files' -f -a $list_tags
 complete -c $progname -n "$op_import" -s r -l remove-source -d 'Delete source files after importing'
 complete -c $progname -n "$op_import" -s n -l no-remove-source -d "Don't delete source files after importing"
-complete -c $progname -n "$op_import" -a -F # files are the positional arguments
+complete -c $progname -n "$op_import" -F # files are the positional arguments
 
 # Query operation
 set -l op_query_nosub 'not __fish_contains_opt -s t -s s list-tags stats'
