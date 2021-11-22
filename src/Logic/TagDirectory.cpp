@@ -132,8 +132,7 @@ TagDirectory::ReplacementResult TagDirectory::replace_tagged_file(std::filesyste
 }
 
 void TagDirectory::untag_file(std::filesystem::path const& name_in_all, bool const renumber) {
-	Filesystem::FilesSet file{ name_in_all };
-	return untag_files(file, renumber);
+	return untag_files(Filesystem::FilesSet{ name_in_all }, renumber);
 }
 
 void TagDirectory::untag_files(Filesystem::FilesSet const& names_in_all, bool const renumber) {
