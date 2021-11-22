@@ -17,7 +17,7 @@ namespace Commands {
 
 Result Query::short_option_callback(char const option_name) {
 	if (auto const maybe_subcommand = magic_enum::enum_cast<Subcommand>(option_name); maybe_subcommand.has_value() && *maybe_subcommand != Subcommand::none) {
-		if (subcommand == Subcommand::none) {
+		if (subcommand != Subcommand::none) {
 			throw Errors::Commands::Multiple{ static_cast<char>(subcommand), option_name, static_cast<char>(this->what()) };
 		}
 		subcommand = *maybe_subcommand;
