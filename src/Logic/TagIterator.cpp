@@ -42,8 +42,21 @@ std::filesystem::path const& TagIterator::operator*() const {
 std::filesystem::path const* TagIterator::operator->() const {
 	return &item_path;
 }
-bool TagIterator::operator!=(TagIterator const& other) const {
-	return is_at_end() != other.is_at_end();
+std::filesystem::path& TagIterator::operator*() {
+	return item_path;
+}
+std::filesystem::path* TagIterator::operator->() {
+	return &item_path;
+}
+bool TagIterator::operator==(TagIterator const& other) const {
+	return (is_at_end() && other.is_at_end()) || (item_path == other.item_path);
+}
+
+TagIterator& begin(TagIterator& x) {
+	return x;
+}
+TagIterator end(TagIterator const&) {
+	return TagIterator{};
 }
 
 }  // namespace Logic

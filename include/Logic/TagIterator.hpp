@@ -12,6 +12,13 @@ using tag_index_t = size_t;
 
 class TagDirectory;
 
+/**
+ * Iterator guarantees:
+ * If a file __ the iterator is deleted, is the iterator invalidated?
+ * Before: no
+ * At: no
+ * After: only non-past-the-end iterators
+ */
 class TagIterator {
 protected:
 	std::filesystem::path item_path;
@@ -25,9 +32,16 @@ public:
 	TagIterator& operator++();
 	std::filesystem::path const& operator*() const;
 	std::filesystem::path const* operator->() const;
-	bool operator!=(TagIterator const& other) const;
+	std::filesystem::path& operator*();
+	std::filesystem::path* operator->();
+	bool operator==(TagIterator const& other) const;
 	friend class TagDirectory;
 	friend class View::View;
+	friend TagIterator& begin(TagIterator& x);
+	friend TagIterator end(TagIterator const& x);
 };
+
+TagIterator& begin(TagIterator& x);
+TagIterator end(TagIterator const& x);
 
 }  // namespace Logic

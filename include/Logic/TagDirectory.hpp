@@ -75,7 +75,6 @@ public:
 	[[nodiscard]] TagIterator begin() const;
 	[[nodiscard]] TagIterator end() const;
 	[[nodiscard]] bool empty() const;
-	[[nodiscard]] std::optional<std::filesystem::path> first_file() const;
 };
 
 }  // namespace Logic

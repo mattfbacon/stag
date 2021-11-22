@@ -103,8 +103,8 @@ void open_file(std::filesystem::path const& path) {
 
 void open_tag(std::string_view const tag_name) {
 	Logic::TagDirectory tag_dir{ tag_name };
-	if (auto const maybe_first_file = tag_dir.first_file(); maybe_first_file.has_value()) {
-		open_file(*maybe_first_file);
+	if (auto const begin = tag_dir.begin(); begin != tag_dir.end()) {
+		open_file(*begin);
 	} else {
 		Logging::warning("Tag is empty, skipping: ", tag_name);
 	}

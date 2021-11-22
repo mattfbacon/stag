@@ -5,6 +5,7 @@
 #include "Errors/Tags.hpp"
 #include "Filesystem.hpp"
 #include "Logic/TagDirectory.hpp"
+#include "Logic/TagIterator.hpp"
 
 namespace Logic {
 
@@ -75,10 +76,8 @@ void TagDirectory::rename(std::string_view new_name) {
 
 size_t TagDirectory::num_files() const {
 	size_t ret = 0;
-	for (auto const& dirent : std::filesystem::directory_iterator{ this_tag_path }) {
-		if (!dirent.is_symlink()) {
-			continue;
-		}
+	for (auto const& unused : TagIterator{ this_tag_path }) {
+		(void)unused;
 		++ret;
 	}
 	return ret;
@@ -95,12 +94,9 @@ std::optional<tag_index_t> TagDirectory::index_from_str(std::string_view const s
 }
 
 std::optional<tag_index_t> TagDirectory::find_file(std::filesystem::path const& file_name) const {
-	for (auto const& tagged_file : std::filesystem::directory_iterator{ this_tag_path }) {
-		if (!tagged_file.is_symlink()) {
-			continue;
-		}
-		if (std::filesystem::equivalent(dereference(tagged_file.path()), file_name)) {
-			return index_from_str(tagged_file.path().filename().string());
+	for (auto const& tagged_file : TagIterator{ this_tag_path }) {
+		if (std::filesystem::equivalent(dereference(tagged_file), file_name)) {
+			return index_from_str(tagged_file.filename().string());
 		}
 	}
 	return std::nullopt;
@@ -228,19 +224,6 @@ TagIterator TagDirectory::end() const {  // NOLINT(readability-convert-member-fu
 }
 bool TagDirectory::empty() const {
 	return begin() != end();
-}
-
-std::optional<std::filesystem::path> TagDirectory::first_file() const {
-	if (this->num_files() == 0) {
-		return std::nullopt;
-	}
-	auto current_name_storage = index_to_path(0);
-	for (tag_index_t name = 1;; ++name) {
-		current_name_storage.replace_filename(std::to_string(name));
-		if (std::filesystem::exists(current_name_storage)) {
-			return { std::move(current_name_storage) };
-		}
-	}
 }
 
 }  // namespace Logic
