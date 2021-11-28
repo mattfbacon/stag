@@ -144,12 +144,8 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE cryptopp)
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${${PROJECT_NAME}_SOURCE_DIR}/${DIR_SRC}/)
 
-find_package(OpenMP)
-if (OpenMP_CXX_FOUND)
-	target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenMP::OpenMP_CXX)
-else()
-	message(WARNING "OpenMP was not found; the resulting build will be slower.")
-endif()
+include(${DIR_LIB}/openmp.cmake)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE openmp)
 
 include(${DIR_LIB}/pegtl.cmake)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE pegtl)
