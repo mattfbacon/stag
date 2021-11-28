@@ -136,16 +136,13 @@ target_link_options(${EXECUTABLE_NAME} PRIVATE
 >")
 
 # Extra Stuff Starts Here
-include(${DIR_LIB}/magic_enum.cmake)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE magic_enum)
-
-include(${DIR_LIB}/cryptopp.cmake)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE cryptopp)
-
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${${PROJECT_NAME}_SOURCE_DIR}/${DIR_SRC}/)
 
-include(${DIR_LIB}/openmp.cmake)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE openmp)
+function(addlib)
+	foreach(name ${ARGV})
+		include(${DIR_LIB}/${name}.cmake)
+		target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${name})
+	endforeach()
+endfunction()
 
-include(${DIR_LIB}/pegtl.cmake)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE pegtl)
+addlib(magic_enum cryptopp openmp pegtl)
