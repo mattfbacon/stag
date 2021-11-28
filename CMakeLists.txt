@@ -145,4 +145,4 @@ function(addlib)
 	endforeach()
 endfunction()
 
-addlib(magic_enum cryptopp openmp pegtl)
+addlib(magic_enum cryptopp openmp pegtl spdlog)
