@@ -4,7 +4,7 @@ BUILD_DIR := build
 
 CMAKE := cmake
 
-CMAKE_FLAGS :=
+CMAKE_FLAGS := -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 
 export CMAKE_GENERATOR = Ninja Multi-Config
 
