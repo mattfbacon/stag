@@ -123,7 +123,7 @@ void Query::run_list_tags() {
 
 void Query::run_stats() {
 	if (!files.empty()) {
-		Logging::warning("Files given to -Qs are ignored");
+		Logging::warn("Files given to -Qs are ignored");
 	}
 
 	auto const number_of_files = Logic::AllDirectory::num_files();

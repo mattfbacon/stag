@@ -32,6 +32,7 @@ set (sources
 	Filesystem.cpp
 	Filesystem/FilesSet.cpp
 	info.cpp
+	Logging.cpp
 	Logic/AllDirectory.cpp
 	Logic/TagDirectory.cpp
 	Logic/TagIterator.cpp

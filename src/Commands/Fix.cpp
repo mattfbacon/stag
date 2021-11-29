@@ -79,7 +79,7 @@ void for_each_tag(Logic::TagsSet const& tags, bool const inverse, std::function<
 #pragma OMP parallel for if (Parallel)
 		for (auto const& tag_name : tags) {
 			if (!Logic::TagDirectory::exists(tag_name)) {
-				Logging::warning("Tag does not exist: ", tag_name);
+				Logging::warn("Tag '{}' does not exist", tag_name);
 				continue;
 			}
 			auto tag = Logic::TagDirectory{ tag_name };
@@ -100,7 +100,7 @@ void renumber_tags(Logic::TagsSet const& tags, bool const inverse) {
  */
 void fix_broken_links(Logic::TagsSet const& tags, bool const inverse, bool const force) {
 	if (!force) {
-		Logging::warning("-Fb without -f is not yet implemented");
+		Logging::warn("-Fb without -f is not yet implemented");
 		return;
 	}
 	for_each_tag<true>(tags, inverse, [](Logic::TagDirectory& tag_dir) {

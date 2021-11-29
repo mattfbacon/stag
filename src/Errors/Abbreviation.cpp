@@ -1,17 +1,23 @@
+#include <algorithm>
+#include <ranges>
+
 #include "Errors/Abbreviation.hpp"
+#include "Logging.hpp"
+
+#include "spdlog/fmt/bundled/core.h"
 
 namespace Errors::Abbreviation {
 
-void NoMatch::print_to(std::ostream& os) const {
-	os << "Abbreviation '" << abbreviation << "' had no matches." << std::endl;
+void NoMatch::log() const {
+	// Logging::error("Abbreviation '{}' had no matches.", abbreviation);
 }
 
-void Ambiguous::print_to(std::ostream& os) const {
-	os << "Abbreviation '" << abbreviation << "' was ambiguous. Expansion candidates:\n";
-	for (auto const& candidate : expansions) {
-		os << "  " << candidate << '\n';
-	}
-	os << "Note that the candidates list may not be complete" << std::endl;
+void Ambiguous::log() const {
+	Logging::error(
+		"Abbreviation '{}' was ambiguous. Expansion candidates:\n  {}\n"
+		"Note that the candidate list may not be complete.",
+		abbreviation,
+		fmt::join(expansions, "\n  "));
 }
 
 }  // namespace Errors::Abbreviation

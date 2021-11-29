@@ -1,12 +1,13 @@
 #include "Errors/Tags.hpp"
+#include "Logging.hpp"
 
 namespace Errors::Tags {
 
-void Exists::print_to(std::ostream& os) const {
-	os << "Tag already exists: " << tag_name << std::endl;
+void Exists::log() const {
+	Logging::critical("Tag '{}' already exists", tag_name);
 }
-void DoesNotExist::print_to(std::ostream& os) const {
-	os << "Tag does not exist: " << tag_name << std::endl;
+void DoesNotExist::log() const {
+	Logging::critical("Tag '{}' does not exist", tag_name);
 }
 
 }  // namespace Errors::Tags

@@ -3,40 +3,39 @@
 
 #include "Errors/ArgParse.hpp"
 #include "Errors/Basic.hpp"
+#include "Logging.hpp"
 
 #include "common.hpp"
 
 namespace Errors::ArgParse {
 
-void print_option(std::ostream& os, OptType const opt_type, std::string_view const opt_name) {
+namespace {
+
+std::string_view option_str(OptType const opt_type) {
 	switch (opt_type) {
 		case OptType::long_opt:
-			os << "long option --";
-			break;
+			return "long option --";
 		case OptType::short_opt:
-			os << "short option -";
-			break;
+			return "short option -";
+		default:
+			__builtin_unreachable();
 	}
-	os << opt_name;
 }
 
-void ArgumentMismatch::print_to(std::ostream& os) const {
-	os << STAG_BINARY_NAME ": " LOGLEVEL_USER ": ";
+}  // namespace
+
+void ArgumentMismatch::log() const {
 	switch (what_happened) {
 		case Reason::expected_not_provided:
-			os << "Expected argument to ";
+			Logging::user("Expected argument to {}{}", option_str(opt_type), opt_name);
 			break;
 		case Reason::provided_not_expected:
-			os << "Unexpected argument provided to ";
+			Logging::user("Unexpected argument provided to {}{}", option_str(opt_type), opt_name);
 			break;
 	}
-	print_option(os, opt_type, opt_name);
-	os << std::endl;
 }
-void UnknownOption::print_to(std::ostream& os) const {
-	os << STAG_BINARY_NAME ": " LOGLEVEL_USER ": Unknown ";
-	print_option(os, opt_type, opt_name);
-	os << std::endl;
+void UnknownOption::log() const {
+	Logging::user("Unknown {}{}", option_str(opt_type), opt_name);
 }
 
 }  // namespace Errors::ArgParse

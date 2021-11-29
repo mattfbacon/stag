@@ -16,7 +16,7 @@ struct Exists : public Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Tags::Exists";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 struct DoesNotExist : public Base {
@@ -25,7 +25,7 @@ struct DoesNotExist : public Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Tags::DoesNotExist";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::Tags

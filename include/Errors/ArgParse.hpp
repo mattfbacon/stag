@@ -21,7 +21,7 @@ struct UnknownOption : public Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::ArgParser::UnknownOption";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 struct ArgumentMismatch : public Base {
@@ -39,7 +39,7 @@ struct ArgumentMismatch : public Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::ArgParse::ArgumentMismatch";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::ArgParse

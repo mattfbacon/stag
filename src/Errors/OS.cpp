@@ -2,11 +2,12 @@
 
 #include "Errors/Base.hpp"
 #include "Errors/OS.hpp"
+#include "Logging.hpp"
 
 namespace Errors::OS {
 
-void Permissions::print_to(std::ostream& os) const {
-	os << STAG_BINARY_NAME ": " LOGLEVEL_FATAL ": Missing " << magic_enum::enum_name(permission) << " perm on " << path << std::endl;
+void Permissions::log() const {
+	Logging::critical("Missing {} perm on {}", magic_enum::enum_name(permission), path.string());
 }
 
 }  // namespace Errors::OS

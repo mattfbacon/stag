@@ -18,7 +18,7 @@ struct Permissions : Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::OS::Permissions";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::OS

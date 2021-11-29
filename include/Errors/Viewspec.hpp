@@ -14,7 +14,7 @@ struct ParseFailure : public ::Errors::Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Viewspec::ParseFailure";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::Viewspec

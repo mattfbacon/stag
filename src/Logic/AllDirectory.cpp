@@ -2,7 +2,6 @@
 
 #include "Errors/Abbreviation.hpp"
 #include "Filesystem.hpp"
-#include "Logging.hpp"
 #include "Logic/AllDirectory.hpp"
 
 namespace Logic::AllDirectory {

@@ -51,7 +51,7 @@ public:
 #pragma OMP parallel for
 		for (auto const& tag : tags) {
 			if (Logic::TagDirectory::remove(tag) == Logic::TagDirectory::RemoveResult::did_not_exist) {
-				Logging::warning("Tag queued for deletion does not exist: ", tag);
+				Logging::warn("Tag '{}' queued for deletion does not exist", tag);
 			}
 		}
 	}

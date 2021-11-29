@@ -68,7 +68,7 @@ void Import::argument_callback(std::string_view value) {
 
 void Import::run() {
 	if (files_to_import.empty()) {
-		Logging::warning("No files provided");
+		Logging::warn("No files provided");
 		return;
 	}
 #pragma OMP parallel for
