@@ -13,36 +13,36 @@ set(DIR_LIB lib CACHE PATH "Libraries Directory")
 
 # Sources
 set (sources
-	Commands/Open.cpp
-	Commands/Views.cpp
+	ArgParser.cpp
+	Callbacks.cpp
 	Commands/Fix.cpp
 	Commands/Import.cpp
 	Commands/MetaTag.cpp
+	Commands/Open.cpp
 	Commands/Query.cpp
 	Commands/TagFiles.cpp
+	Commands/Views.cpp
 	Errors/Abbreviation.cpp
 	Errors/ArgParse.cpp
 	Errors/Basic.cpp
+	Errors/Commands.cpp
 	Errors/OS.cpp
 	Errors/Tags.cpp
 	Errors/Viewspec.cpp
-	Errors/Commands.cpp
+	Filesystem.cpp
 	Filesystem/FilesSet.cpp
-	Logic/TagsIterator.cpp
-	Logic/TagIterator.cpp
+	info.cpp
 	Logic/AllDirectory.cpp
 	Logic/TagDirectory.cpp
+	Logic/TagIterator.cpp
+	Logic/TagsIterator.cpp
 	Logic/TagsSet.cpp
 	Logic/UUID.cpp
-	your_stdlib_is_garbage.cpp
-	info.cpp
-	ArgParser.cpp
-	Filesystem.cpp
 	main.cpp
-	Callbacks.cpp
+	View/Parser.cpp
 	View/View.cpp
 	View/ViewspecImpl.cpp
-	View/Parser.cpp
+	your_stdlib_is_garbage.cpp
 	)
 
 project(${PROJECT_NAME} VERSION 0.1 LANGUAGES C CXX)
