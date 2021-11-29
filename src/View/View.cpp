@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "Filesystem.hpp"
 #include "Logging.hpp"
 #include "Logic/TagDirectory.hpp"
@@ -57,13 +59,10 @@ size_t View::num_files() const {
 }
 
 bool View::empty() const {
-	for (auto const& dirent : std::filesystem::directory_iterator{ view_path }) {
-		if (!dirent.is_symlink()) {
-			continue;
-		}
-		return false;
-	}
-	return true;
+	std::filesystem::directory_iterator dir_it{ view_path };
+	return std::all_of(std::filesystem::begin(dir_it), std::filesystem::end(dir_it), [](std::filesystem::directory_entry const& dirent) {
+		return !dirent.is_symlink();
+	});
 }
 
 Logic::TagIterator View::begin() const {
