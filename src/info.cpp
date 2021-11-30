@@ -2,6 +2,7 @@
 #include <iostream>
 #include <magic_enum.hpp>
 #include <ostream>
+#include <spdlog/version.h>
 #include <tao/pegtl/version.hpp>
 
 #include "common.hpp"
@@ -26,6 +27,7 @@ void print_version() {
 		"  PEGTL version " TAO_PEGTL_VERSION " (https://github.com/taocpp/pegtl)\n"
 		"  Magic Enum version " STAG_XSTR(MAGIC_ENUM_VERSION_MAJOR) "." STAG_XSTR(MAGIC_ENUM_VERSION_MINOR) "." STAG_XSTR(MAGIC_ENUM_VERSION_PATCH) " (https://github.com/Neargye/magic_enum)\n"
 		"  CryptoPP version " STAG_XSTR(CRYPTOPP_MAJOR) "." STAG_XSTR(CRYPTOPP_MINOR) "." STAG_XSTR(CRYPTOPP_REVISION) " (https://github.com/weidai11/cryptopp)\n"
+		"  SPDLog version " STAG_XSTR(SPDLOG_VER_MAJOR) "." STAG_XSTR(SPDLOG_VER_MINOR) "." STAG_XSTR(SPDLOG_VER_PATCH) " (https://github.com/gabime/spdlog)\n"
 		;
 	// clang-format on
 }
