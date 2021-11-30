@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <unistd.h>
 
@@ -20,11 +21,15 @@ std::filesystem::path const path_tagdir_to_all{ PATH_TAGDIR_TO_ALL };
  */
 void ensure_stagspace() {
 	if (!std::filesystem::exists(Filesystem::path_dot_stagspace)) {
-		for (auto const& file : std::filesystem::directory_iterator{ std::filesystem::current_path() }) {
-			if (file.path().filename().string().starts_with(".")) {  // matches any dotfile
-				continue;
+		auto dir_it = std::filesystem::directory_iterator{ std::filesystem::current_path() };
+		// clang-format off
+		if (!std::all_of(
+			begin(dir_it),
+			end(dir_it),
+			[](std::filesystem::directory_entry const& file) {
+				return file.path().filename().string().starts_with(".");  // matches any dotfile
 			}
-			// clang-format off
+		)) {
 			throw Errors::Basic::User{ "Current directory has contents but is not marked as a " STAG_PROGRAM_NAME "-space. To resolve this issue, either create a file called '" PATH_DOT_STAGSPACE "', or remove the current contents." };
 			// clang-format on
 		}
