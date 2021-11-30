@@ -32,6 +32,7 @@ set (sources
 	Filesystem.cpp
 	Filesystem/FilesSet.cpp
 	info.cpp
+	Logging.cpp
 	Logic/AllDirectory.cpp
 	Logic/TagDirectory.cpp
 	Logic/TagIterator.cpp
@@ -145,4 +146,4 @@ function(addlib)
 	endforeach()
 endfunction()
 
-addlib(magic_enum cryptopp openmp pegtl)
+addlib(magic_enum cryptopp openmp pegtl spdlog)

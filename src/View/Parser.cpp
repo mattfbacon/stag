@@ -1,11 +1,12 @@
+#include <cassert>
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
 #include "Errors/Viewspec.hpp"
+#include "Logging.hpp"
 #include "View/Parser.hpp"
 
 #if !defined(NDEBUG)
-#include <cassert>
 #include <tao/pegtl/contrib/analyze.hpp>
 #endif
 
@@ -50,10 +51,15 @@ struct prec_layer_0 : left_assoc_operator<prec_layer_1, operator_or> {};
 
 struct grammar : P::must<P::pad<prec_layer_0, P::space>, P::eof> {};
 
+void log_transformation(std::string_view const name, P::parse_tree::node& node) {
+	Logging::trace("Parser: Running '{}' on node type '{}' with {} children", name, node.type, node.children.size());
+}
+
 template <bool RightAssoc = false>
 struct operator_rearrange : P::parse_tree::apply<operator_rearrange<RightAssoc>> {
 	template <typename... States>
 	static void transform(std::unique_ptr<P::parse_tree::node>& node, States&&... st) {
+		log_transformation("operator_rearrange (left-assoc)", *node);
 		if (node->children.size() == 1) {
 			node = std::move(node->children[0]);
 		} else {
@@ -79,6 +85,7 @@ template <>
 struct operator_rearrange<true> : P::parse_tree::apply<operator_rearrange<true>> {
 	template <typename... States>
 	static void transform(std::unique_ptr<P::parse_tree::node>& node, States&&... st) {
+		log_transformation("operator_rearrange (right-assoc)", *node);
 		if (node->children.size() == 1) {
 			node = std::move(node->children[0]);
 		} else {
@@ -104,6 +111,7 @@ struct operator_rearrange<true> : P::parse_tree::apply<operator_rearrange<true>>
 struct operator_as_node : P::parse_tree::apply<operator_as_node> {
 	template <typename... States>
 	static void transform(std::unique_ptr<P::parse_tree::node>& node, States&&...) {
+		log_transformation("operator_as_node", *node);
 		// transforms from...
 		//          operator_wrapper
 		//  operator_character  arg...
@@ -143,6 +151,7 @@ namespace SyntaxTree {
 
 #define MAPPING(SOURCE, CTOR) \
 	if (root->is_type<Exprs::SOURCE>()) { \
+		Logging::trace("Parser: matched transformation from '{}' to '{}'", STAG_XSTR(SOURCE), STAG_XSTR(CTOR)); \
 		return (CTOR); \
 	}
 #define BINARY_MAPPING(SOURCE, DEST) \
@@ -166,6 +175,10 @@ std::unique_ptr<Viewspec> make_syntax_tree_helper(std::unique_ptr<tao::pegtl::pa
 #undef DIRECT_MAPPING
 #undef MAPPING
 
+void log_optimization(std::string_view const source, std::string_view const dest) {
+	Logging::trace("Optimizing syntax tree: '{}' -> '{}'", source, dest);
+}
+
 /**
  * The goal of this function is to remove usage of the not operator.
  * The not operator is very inefficient because it returns a very large set.
@@ -179,7 +192,7 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 		auto* not_op_left = dynamic_cast<V::NotOp*>(and_op->left.get());
 		auto* not_op_right = dynamic_cast<V::NotOp*>(and_op->right.get());
 		if (not_op_left && not_op_right) {
-			// (not a) and (not b) -> not (a or b)
+			log_optimization("(not a) and (not b)", "not (a or b)");
 			auto new_or_op = std::make_unique<V::OrOp>(std::move(not_op_left->child), std::move(not_op_right->child));
 			root = std::make_unique<V::NotOp>(std::move(new_or_op));
 		} else if ((not_op_left != nullptr) ^ (not_op_right != nullptr)) {
@@ -188,7 +201,7 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 				swap(not_op_left, not_op_right);
 				swap(and_op->left, and_op->right);
 			}
-			// a and (not b) -> a subtract b
+			log_optimization("a and (not b)", "a subtract b");
 			root = std::make_unique<V::SubtractOp>(std::move(and_op->left), std::move(not_op_right->child));
 		}  // else: a and b -> (leave it alone)
 	} else if (auto* const subtract_op = dynamic_cast<V::SubtractOp*>(root.get()); subtract_op != nullptr) {
@@ -196,20 +209,22 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 		auto* not_op_subtrahend = dynamic_cast<V::NotOp*>(subtract_op->subtrahend.get());
 		if (not_op_minuend && not_op_subtrahend) {
 			// (not a) minus (not b) -> (not a) and b -> b and (not a) -> b minus a
+			log_optimization("(not a) minus (not b)", "b minus a");
 			root = std::make_unique<V::SubtractOp>(std::move(not_op_subtrahend->child), std::move(not_op_minuend->child));
 		} else if (not_op_minuend && !not_op_subtrahend) {
 			// (not a) minus b -> (not a) and (not b) -> not (a or b)
+			log_optimization("(not a) minus b", "not (a or b)");
 			auto new_or_op = std::make_unique<V::OrOp>(std::move(not_op_minuend->child), std::move(subtract_op->subtrahend));
 			root = std::make_unique<V::NotOp>(std::move(new_or_op));
 		} else if (!not_op_minuend && not_op_subtrahend) {
-			// a minus (not b) -> a and b
+			log_optimization("a minus (not b)", "a and b");
 			root = std::make_unique<V::AndOp>(std::move(subtract_op->minuend), std::move(not_op_subtrahend->child));
 		}  // else: a minus b -> (leave it alone)
 	} else if (auto* const or_op = dynamic_cast<V::OrOp*>(root.get()); or_op != nullptr) {
 		auto* not_op_left = dynamic_cast<V::NotOp*>(or_op->left.get());
 		auto* not_op_right = dynamic_cast<V::NotOp*>(or_op->right.get());
 		if (not_op_left && not_op_right) {
-			// (not a) or (not b) -> not (a and b)
+			log_optimization("(not a) or (not b)", "not (a and b)");
 			auto new_and_op = std::make_unique<V::AndOp>(std::move(not_op_left->child), std::move(not_op_right->child));
 			root = std::make_unique<V::NotOp>(std::move(new_and_op));
 		} else if ((not_op_left != nullptr) ^ (not_op_right != nullptr)) {
@@ -219,13 +234,14 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 				swap(or_op->left, or_op->right);
 			}
 			// a or (not b) -> not ((not a) and b) -> not (b and (not a)) -> not (b minus a)
+			log_optimization("a or (not b)", "not (b minus a)");
 			auto new_subtract_op = std::make_unique<V::SubtractOp>(std::move(not_op_right->child), std::move(or_op->left));
 			root = std::make_unique<V::NotOp>(std::move(new_subtract_op));
 		}  // else: a or b -> (leave it alone)
 	} else if (auto* const not_op = dynamic_cast<V::NotOp*>(root.get()); not_op != nullptr) {
 		auto const not_op_child = dynamic_cast<V::NotOp*>(not_op->child.get());
 		if (not_op_child) {
-			// not (not a) -> a
+			log_optimization("not (not a)", "a");
 			root = std::move(not_op_child->child);
 		}
 	}  // else: (file or tag) -> (leave it alone)
@@ -235,6 +251,8 @@ std::unique_ptr<Viewspec> make_syntax_tree(std::unique_ptr<tao::pegtl::parse_tre
 	auto syntax_tree = make_syntax_tree_helper(root);
 	if (optimize) {
 		optimize_syntax_tree(syntax_tree);
+	} else {
+		Logging::trace("Not optimizing syntax tree");
 	}
 	return syntax_tree;
 }

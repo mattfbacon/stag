@@ -27,6 +27,7 @@ Result Open::short_option_callback(char const option_name) {
 }
 
 void Open::short_option_argument_callback(char const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "Open", "short", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -43,6 +44,7 @@ Result Open::long_option_callback(std::string_view const option_name) {
 }
 
 void Open::long_option_argument_callback(std::string_view const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "Open", "long", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -96,7 +98,7 @@ void open_file(std::filesystem::path const& path) {
 			throw std::system_error{ errno, std::system_category() };
 		}
 		if (WIFEXITED(status) && WEXITSTATUS(status) > 0) {
-			Logging::warning("Running subcommand failed with exit code ", WEXITSTATUS(status));
+			Logging::warn("Running subcommand failed with exit code {}", WEXITSTATUS(status));
 		}
 	}
 }
@@ -106,7 +108,7 @@ void open_tag(std::string_view const tag_name) {
 	if (auto const begin = tag_dir.begin(); begin != tag_dir.end()) {
 		open_file(*begin);
 	} else {
-		Logging::warning("Tag is empty, skipping: ", tag_name);
+		Logging::warn("Tag '{}' is empty, skipping", tag_name);
 	}
 }
 
@@ -115,7 +117,7 @@ void open_abbr_file(std::string_view const abbr) {
 		auto const expanded = Logic::AllDirectory::expand_file_abbreviation(abbr);
 		open_file(expanded);
 	} catch (Errors::Abbreviation::Base const& e) {
-		e.print_to(std::clog);
+		e.log();
 	}
 }
 
@@ -124,7 +126,7 @@ void open_view(std::string_view const viewspec, bool const clean) {
 	if (auto const view_begin = view.begin(); view_begin != view.end()) {
 		open_file(*view_begin);
 	} else {
-		Logging::warning("View is empty, skipping: ", viewspec);
+		Logging::warn("View '{}' is empty, skipping", viewspec);
 	}
 }
 

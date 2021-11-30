@@ -9,6 +9,7 @@
 namespace View {
 
 void View::generate_view() const {
+	Logging::debug("Generating view at '{}'", view_path);
 	auto view_dir = Logic::TagDirectory::from_path(view_path);
 	for (auto const& item : viewspec->evaluate()) {
 		view_dir.tag_file(item, false);
@@ -20,6 +21,7 @@ bool View::exists() const {
 }
 
 void View::remove() const {
+	Logging::debug("Removing view at '{}'", view_path);
 	std::filesystem::remove_all(view_path);
 }
 
@@ -34,7 +36,7 @@ View::View(std::string_view const a_viewspec, bool const a_clean, bool const alw
 			remove();
 			generate_view();
 		} else {
-			Logging::info("Using existing view for ", view_path.filename());
+			Logging::info("Using existing view for '{}'", view_path.filename().string());
 		}
 	} else {
 		generate_view();

@@ -1,21 +1,24 @@
 #pragma once
 
-#include <iostream>
-
-#include "common.hpp"
+#include <filesystem>
+#include <fmt/ostream.h>
+#include <memory>
+#include <spdlog/common.h>
+#include <spdlog/logger.h>
+#include <spdlog/spdlog.h>
+#include <tao/pegtl/position.hpp>
 
 namespace Logging {
 
-template <typename... Items>
-void warning(Items const&... items) {
-	std::clog << STAG_BINARY_NAME ": warning: ";
-	(std::clog << ... << items) << std::endl;
-}
+extern std::shared_ptr<spdlog::logger> user_logger;
 
-template <typename... Items>
-void info(Items const&... items) {
-	std::clog << STAG_BINARY_NAME ": info: ";
-	(std::clog << ... << items) << std::endl;
+void set_level_from_string(std::string_view str);
+
+using spdlog::trace, spdlog::debug, spdlog::info, spdlog::warn, spdlog::error, spdlog::critical;
+
+template <typename... Args>
+constexpr auto user(spdlog::format_string_t<Args...> fmt, Args&&... args) {
+	return user_logger->info(fmt, std::forward<Args>(args)...);
 }
 
 }  // namespace Logging

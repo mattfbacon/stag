@@ -5,7 +5,10 @@
 #include "Errors/Basic.hpp"
 #include "Errors/OS.hpp"
 #include "Filesystem.hpp"
+#include "Logging.hpp"
 #include "Logic/UUID.hpp"
+
+#include "common.hpp"
 
 namespace Filesystem {
 
@@ -20,7 +23,9 @@ std::filesystem::path const path_tagdir_to_all{ PATH_TAGDIR_TO_ALL };
  * If it doesn't have that, the existence of any other non-dotfile means that data might be overwritten (somehow), so we want to warn the user.
  */
 void ensure_stagspace() {
+	Logging::trace("Ensuring the existence of a " STAG_PROGRAM_NAME "-space");
 	if (!std::filesystem::exists(Filesystem::path_dot_stagspace)) {
+		Logging::trace("  " PATH_DOT_STAGSPACE " does not exist");
 		auto dir_it = std::filesystem::directory_iterator{ std::filesystem::current_path() };
 		// clang-format off
 		if (!std::all_of(
@@ -35,6 +40,7 @@ void ensure_stagspace() {
 		}
 		std::ofstream{ Filesystem::path_dot_stagspace };
 	}
+	Logging::trace("  Creating " STAG_PROGRAM_NAME "-space directories");
 #pragma OMP parallel for
 	for (auto const& path : { Filesystem::path_all, Filesystem::path_tags, Filesystem::path_views }) {
 		std::filesystem::create_directories(path);
@@ -42,6 +48,7 @@ void ensure_stagspace() {
 }
 
 std::filesystem::path import_file(std::filesystem::path const& external_path, bool const delete_after_importing) {
+	Logging::trace("Importing '{}' into the All directory (delete after importing? {})", external_path, delete_after_importing);
 	auto imported_filename = Filesystem::path_all / Logic::UUID::from_file(external_path.c_str());
 	imported_filename.replace_extension(external_path.extension());
 	if (delete_after_importing) {

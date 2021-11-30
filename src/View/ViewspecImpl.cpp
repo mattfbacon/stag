@@ -1,3 +1,4 @@
+#include "Logging.hpp"
 #include "Logic/AllDirectory.hpp"
 #include "Logic/TagDirectory.hpp"
 #include "View/ViewspecImpl.hpp"
@@ -5,6 +6,7 @@
 namespace View::ViewspecImpl {
 
 Filesystem::FilesSet Tag::evaluate() const {
+	Logging::trace("Viewspec: evaluating tag '{}'", tag_name);
 	Logic::TagDirectory tag{ tag_name };
 	Filesystem::FilesSet ret;
 	for (auto const& file : tag) {
@@ -14,6 +16,7 @@ Filesystem::FilesSet Tag::evaluate() const {
 }
 
 Filesystem::FilesSet File::evaluate() const {
+	Logging::trace("Viewspec: evaluating file '{}'", file_name);
 	return Filesystem::FilesSet{ file_name };
 }
 
@@ -21,6 +24,7 @@ void NotOp::run_children(std::function<void(std::unique_ptr<Base>&)> callback) {
 	callback(child);
 }
 Filesystem::FilesSet NotOp::evaluate() const {
+	Logging::trace("Viewspec: evaluating not operation");
 	return ~child->evaluate();
 }
 
@@ -29,6 +33,7 @@ void AndOp::run_children(std::function<void(std::unique_ptr<Base>&)> callback) {
 	callback(right);
 }
 Filesystem::FilesSet AndOp::evaluate() const {
+	Logging::trace("Viewspec: evaluating and operation");
 	return left->evaluate() & right->evaluate();
 }
 
@@ -37,6 +42,7 @@ void OrOp::run_children(std::function<void(std::unique_ptr<Base>&)> callback) {
 	callback(right);
 }
 Filesystem::FilesSet OrOp::evaluate() const {
+	Logging::trace("Viewspec: evaluating or operation");
 	return left->evaluate() | right->evaluate();
 }
 
@@ -45,6 +51,7 @@ void SubtractOp::run_children(std::function<void(std::unique_ptr<Base>&)> callba
 	callback(subtrahend);
 }
 Filesystem::FilesSet SubtractOp::evaluate() const {
+	Logging::trace("Viewspec: evaluating subtract operation");
 	return minuend->evaluate() - subtrahend->evaluate();
 }
 

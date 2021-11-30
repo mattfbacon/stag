@@ -36,6 +36,7 @@ Result Fix::short_option_callback(char const option_name) {
 }
 
 void Fix::short_option_argument_callback(char const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "Fix", "short", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -54,6 +55,7 @@ Result Fix::long_option_callback(std::string_view const option_name) {
 }
 
 void Fix::long_option_argument_callback(std::string_view const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "Fix", "long", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -79,7 +81,7 @@ void for_each_tag(Logic::TagsSet const& tags, bool const inverse, std::function<
 #pragma OMP parallel for if (Parallel)
 		for (auto const& tag_name : tags) {
 			if (!Logic::TagDirectory::exists(tag_name)) {
-				Logging::warning("Tag does not exist: ", tag_name);
+				Logging::warn("Tag '{}' does not exist", tag_name);
 				continue;
 			}
 			auto tag = Logic::TagDirectory{ tag_name };
@@ -100,7 +102,7 @@ void renumber_tags(Logic::TagsSet const& tags, bool const inverse) {
  */
 void fix_broken_links(Logic::TagsSet const& tags, bool const inverse, bool const force) {
 	if (!force) {
-		Logging::warning("-Fb without -f is not yet implemented");
+		Logging::warn("-Fb without -f is not yet implemented");
 		return;
 	}
 	for_each_tag<true>(tags, inverse, [](Logic::TagDirectory& tag_dir) {

@@ -14,7 +14,7 @@ struct User : public ::Errors::Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Basic::User";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 struct Fatal : public ::Errors::Base {
@@ -23,7 +23,7 @@ struct Fatal : public ::Errors::Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Basic::Fatal";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::Basic

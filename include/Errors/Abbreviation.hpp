@@ -17,7 +17,7 @@ struct NoMatch : public Base {
 	char const* what() const noexcept override {
 		return "Errors::Abbreviation::NoMatch";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 struct Ambiguous : public Base {
@@ -28,7 +28,7 @@ struct Ambiguous : public Base {
 	char const* what() const noexcept override {
 		return "Errors::Abbreviation::Ambiguous";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::Abbreviation

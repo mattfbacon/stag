@@ -1,3 +1,4 @@
+#include "Logging.hpp"
 #include "Logic/TagIterator.hpp"
 
 #include "util.hpp"
@@ -49,7 +50,9 @@ std::filesystem::path* TagIterator::operator->() {
 	return &item_path;
 }
 bool TagIterator::operator==(TagIterator const& other) const {
-	return (is_at_end() && other.is_at_end()) || (item_path == other.item_path);
+	auto result = (is_at_end() && other.is_at_end()) || (item_path == other.item_path);
+	Logging::debug("Comparing `TagIterator`s '{}' and '{}' (is_at_end? {}; other.is_at_end? {}): result {}", item_path, other.item_path, is_at_end(), other.is_at_end(), result);
+	return result;
 }
 
 TagIterator& begin(TagIterator& x) {

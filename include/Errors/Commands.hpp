@@ -15,7 +15,7 @@ struct Multiple : public ::Errors::Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Commands::Multiple";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 struct None : public ::Errors::Base {
@@ -24,7 +24,7 @@ struct None : public ::Errors::Base {
 	[[nodiscard]] char const* what() const noexcept override {
 		return "Errors::Commands::None";
 	}
-	void print_to(std::ostream& os) const override;
+	void log() const override;
 };
 
 }  // namespace Errors::Commands

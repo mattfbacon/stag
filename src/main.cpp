@@ -5,6 +5,7 @@
 #include "Callbacks.hpp"
 #include "Errors/Base.hpp"
 #include "Filesystem.hpp"
+#include "Logging.hpp"
 
 #include "common.hpp"
 
@@ -15,6 +16,9 @@ int main(int const argc, char const* const argv[]) try {
 	callbacks.run();
 	return EXIT_SUCCESS;
 } catch (Errors::Base const& e) {
-	std::clog << e;
+	e.log();
 	return EXIT_FAILURE;
+} catch (...) {
+	spdlog::dump_backtrace();
+	throw;
 }

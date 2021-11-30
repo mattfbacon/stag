@@ -28,6 +28,7 @@ Result Query::short_option_callback(char const option_name) {
 }
 
 void Query::short_option_argument_callback(char const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "Query", "short", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -44,6 +45,7 @@ Result Query::long_option_callback(std::string_view const option_name) {
 }
 
 void Query::long_option_argument_callback(std::string_view const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "Query", "long", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -123,7 +125,7 @@ void Query::run_list_tags() {
 
 void Query::run_stats() {
 	if (!files.empty()) {
-		Logging::warning("Files given to -Qs are ignored");
+		Logging::warn("Files given to -Qs are ignored");
 	}
 
 	auto const number_of_files = Logic::AllDirectory::num_files();

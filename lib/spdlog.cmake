@@ -1,0 +1,3 @@
+set(SPDLOG_BUILD_SHARED OFF)
+set(SPDLOG_ENABLE_PCH ON)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/spdlog)

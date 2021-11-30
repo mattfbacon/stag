@@ -11,3 +11,6 @@
 [submodule "lib/PEGTL"]
 	path = lib/pegtl
 	url = https://github.com/taocpp/PEGTL
+[submodule "lib/spdlog"]
+	path = lib/spdlog
+	url = https://github.com/gabime/spdlog.git
