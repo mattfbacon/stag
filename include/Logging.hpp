@@ -12,6 +12,8 @@ namespace Logging {
 
 extern std::shared_ptr<spdlog::logger> user_logger;
 
+void set_level_from_string(std::string_view str);
+
 using spdlog::trace, spdlog::debug, spdlog::info, spdlog::warn, spdlog::error, spdlog::critical;
 
 template <typename... Args>

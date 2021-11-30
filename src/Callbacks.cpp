@@ -83,16 +83,17 @@ void Callbacks::short_option_argument_callback(char const option_name, std::stri
 	return command_callbacks->short_option_argument_callback(option_name, value);
 }
 
-std::unordered_map<std::string_view, std::function<void(void)>> const global_long_options{
+std::unordered_map<std::string_view, std::function<Result(void)>> const global_long_options{
 	// clang-format off
-	{ "help", [] { print_usage_to(std::cout); std::exit(EXIT_SUCCESS); } },
-	{ "version", [] { print_version(); std::exit(EXIT_SUCCESS); } },
+	{ "help", [] { print_usage_to(std::cout); std::exit(EXIT_SUCCESS); return Result::no_argument; } },
+	{ "version", [] { print_version(); std::exit(EXIT_SUCCESS); return Result::no_argument; } },
+	{ "verbose", [] { Logging::set_level_from_string("trace"); return Result::no_argument; } },
+	{ "log-level", [] { return Result::want_argument; } },
 	// clang-format on
 };
 Result Callbacks::long_option_callback(std::string_view const option_name) {
 	if (auto const maybe_callback = util::maybe_get(global_long_options, option_name); maybe_callback.has_value()) {
-		(*maybe_callback)();
-		return Result::no_argument;
+		return (*maybe_callback)();
 	} else {
 		if (!command_callbacks) {
 			throw Errors::Commands::None{};
@@ -103,6 +104,10 @@ Result Callbacks::long_option_callback(std::string_view const option_name) {
 }
 
 void Callbacks::long_option_argument_callback(std::string_view const option_name, std::string_view const value) {
+	if (option_name == "log-level") {
+		Logging::set_level_from_string(value);
+		return;
+	}
 	if (!command_callbacks) {
 		throw Errors::Commands::None{};
 	}
