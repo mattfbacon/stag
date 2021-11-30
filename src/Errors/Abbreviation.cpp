@@ -9,7 +9,7 @@
 namespace Errors::Abbreviation {
 
 void NoMatch::log() const {
-	// Logging::error("Abbreviation '{}' had no matches.", abbreviation);
+	Logging::error("Abbreviation '{}' had no matches.", abbreviation);
 }
 
 void Ambiguous::log() const {

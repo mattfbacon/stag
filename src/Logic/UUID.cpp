@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 
+#include "Logging.hpp"
 #include "Logic/UUID.hpp"
 
 #include "common.hpp"
@@ -140,6 +141,7 @@ MemMappedFile::~MemMappedFile() {
 namespace Logic::UUID {
 
 std::string from_file(std::filesystem::path const& filename) {
+	Logging::trace("Generating UUID from file '{}'", filename);
 	MemMappedFile file{ filename };
 	return from_data(file.view<CryptoPP::byte>());
 }
@@ -151,6 +153,7 @@ std::string from_file(std::filesystem::path const& filename) {
 namespace Logic::UUID {
 
 std::string from_file(std::filesystem::path const& filename) {
+	Logging::trace("Generating UUID from file '{}'", filename);
 	CryptoPP::BLAKE2b hasher(false, HASH_NUM_BYTES);
 	std::ifstream file{ filename };
 	std::array<CryptoPP::byte, 4096> buffer;

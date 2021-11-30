@@ -25,8 +25,10 @@ public:
 		}
 	}
 	void run() const override {
+		Logging::trace("Running meta-tag create operation");
 #pragma OMP parallel for
 		for (auto const& tag : tags) {
+			Logging::trace("  Create tag: '{}'", tag);
 			Logic::TagDirectory{ tag };
 		}
 	}
@@ -48,8 +50,10 @@ public:
 		}
 	}
 	void run() const override {
+		Logging::trace("Running meta-tag delete operation");
 #pragma OMP parallel for
 		for (auto const& tag : tags) {
+			Logging::trace("  Delete tag: '{}'", tag);
 			if (Logic::TagDirectory::remove(tag) == Logic::TagDirectory::RemoveResult::did_not_exist) {
 				Logging::warn("Tag '{}' queued for deletion does not exist", tag);
 			}
@@ -88,6 +92,7 @@ public:
 		}
 	}
 	void run() const override {
+		Logging::trace("Running meta-tag rename operation: '{}' -> '{}'", old, new_);
 		if (!Logic::TagDirectory::exists(old)) {
 			throw Errors::Tags::DoesNotExist{ old };
 		}
@@ -148,6 +153,7 @@ Result MetaTag::short_option_callback(char const option_name) {
 }
 
 void MetaTag::short_option_argument_callback(char const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "MetaTag", "short", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -166,6 +172,7 @@ Result MetaTag::long_option_callback(std::string_view const option_name) {
 }
 
 void MetaTag::long_option_argument_callback(std::string_view const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "MetaTag", "long", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);

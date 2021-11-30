@@ -14,6 +14,7 @@
 #include "Commands/Views.hpp"
 #include "Errors/ArgParse.hpp"
 #include "Errors/Commands.hpp"
+#include "Logging.hpp"
 
 #include "common.hpp"
 #include "info.hpp"
@@ -42,6 +43,7 @@ std::unique_ptr<Base> make(Command const command) {
 		case Command::open:
 			return std::make_unique<Open>();
 		case Command::none:
+			Logging::debug("Trying to make a Command of type none");
 			assert(false);
 			return nullptr;
 	}
@@ -68,6 +70,7 @@ Result Callbacks::short_option_callback(char const option_name) {
 		if (!command_callbacks) {
 			throw CmdErr::None{};
 		}
+		Logging::trace("Passing short option '{}' to subcommand", option_name);
 		return command_callbacks->short_option_callback(option_name);
 	}
 }
@@ -76,6 +79,7 @@ void Callbacks::short_option_argument_callback(char const option_name, std::stri
 	if (!command_callbacks) {
 		throw CmdErr::None{};
 	}
+	Logging::trace("Passing argument '{}' for short option '{}' to subcommand", value, option_name);
 	return command_callbacks->short_option_argument_callback(option_name, value);
 }
 
@@ -93,6 +97,7 @@ Result Callbacks::long_option_callback(std::string_view const option_name) {
 		if (!command_callbacks) {
 			throw Errors::Commands::None{};
 		}
+		Logging::trace("Passing long option '{}' to subcommand", option_name);
 		return command_callbacks->long_option_callback(option_name);
 	}
 }
@@ -101,6 +106,7 @@ void Callbacks::long_option_argument_callback(std::string_view const option_name
 	if (!command_callbacks) {
 		throw Errors::Commands::None{};
 	}
+	Logging::trace("Passing argument '{}' for long option '{}' to subcommand", value, option_name);
 	return command_callbacks->long_option_argument_callback(option_name, value);
 }
 
@@ -108,6 +114,7 @@ void Callbacks::argument_callback(std::string_view const value) {
 	if (!command_callbacks) {
 		throw Errors::Commands::None{};
 	}
+	Logging::trace("Passing argument '{}' to subcommand", value);
 	return command_callbacks->argument_callback(value);
 }
 

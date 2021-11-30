@@ -7,6 +7,7 @@
 #include "Commands/TagFiles.hpp"
 #include "Errors/ArgParse.hpp"
 #include "Errors/Commands.hpp"
+#include "Logging.hpp"
 #include "Logic/AllDirectory.hpp"
 #include "Logic/TagDirectory.hpp"
 
@@ -32,6 +33,7 @@ Result TagFiles::short_option_callback(char const option_name) {
 }
 
 void TagFiles::short_option_argument_callback(char const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "TagFiles", "short", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);
@@ -52,6 +54,7 @@ Result TagFiles::long_option_callback(std::string_view const option_name) {
 }
 
 void TagFiles::long_option_argument_callback(std::string_view const option_name, std::string_view value) {
+	Logging::debug("{}::{}_option_argument_callback should have been unreachable (called with '{}' and '{}')", "TagFiles", "long", option_name, value);
 	(void)option_name;
 	(void)value;
 	assert(false);

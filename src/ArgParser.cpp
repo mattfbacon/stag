@@ -2,6 +2,7 @@
 
 #include "ArgParser.hpp"
 #include "Errors/ArgParse.hpp"
+#include "Logging.hpp"
 
 #include "common.hpp"
 
@@ -44,6 +45,7 @@ ArgType identify_arg_type(std::string_view const arg) {
 }
 
 bool check_next_argument(arg_iter_t& arg_iter, arg_iter_t const& arg_end_iter) {
+	Logging::trace("ArgParser: checking for next argument");
 	if (!safe_iter_increment(arg_iter, arg_end_iter)) {
 		return false;
 	}
@@ -51,6 +53,7 @@ bool check_next_argument(arg_iter_t& arg_iter, arg_iter_t const& arg_end_iter) {
 }
 
 void parse_short_option_block(Callbacks& callbacks, arg_t short_option_block, arg_iter_t& arg_iter, arg_iter_t const& arg_end_iter) {
+	Logging::trace("ArgParser: parsing short option block with content '{}'", short_option_block);
 	do {
 		auto const short_option_name = short_option_block[0];
 		auto const option_callback_result = callbacks.short_option_callback(short_option_name);
@@ -75,6 +78,7 @@ void parse_short_option_block(Callbacks& callbacks, arg_t short_option_block, ar
 }
 
 void parse_long_option(Callbacks& callbacks, arg_t long_option_content, arg_iter_t& arg_iter, arg_iter_t const& arg_end_iter) {
+	Logging::trace("ArgParser: parsing long option with content '{}'", long_option_content);
 	auto const equals_sign_position = long_option_content.find('=');
 	auto const long_option_name = long_option_content.substr(0, equals_sign_position);
 	auto const option_callback_result = callbacks.long_option_callback(long_option_name);
@@ -106,6 +110,7 @@ void ArgParser::parse(Callbacks& callbacks, arg_span_t const args) {
 	arg_iter_t const arg_end_iter = args.end();
 	for (; arg_iter < arg_end_iter; ++arg_iter) {
 		arg_t const arg = *arg_iter;
+		Logging::trace("ArgParser: raw argument is '{}'", arg);
 		switch (identify_arg_type(arg)) {
 			case ArgType::positional:
 				callbacks.argument_callback(arg);
@@ -132,6 +137,7 @@ exit_loop:;
 }
 
 void ArgParser::parse(int const argc, char const* const* const argv, Callbacks& callbacks) {
+	Logging::trace("ArgParser: parser invoked with argc and argv; converting to vector<string_view>");
 	std::vector<std::string_view> args;
 	assert(argc > 0);
 	if (argc == 0) {

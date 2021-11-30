@@ -2,11 +2,14 @@
 
 #include "Filesystem.hpp"
 #include "Filesystem/FilesSet.hpp"
+#include "Logging.hpp"
 
 namespace Filesystem {
 
 FilesSet::value_type FilesSet::normalize(value_type const& p) {
-	return std::filesystem::absolute(p.lexically_normal());
+	auto ret = std::filesystem::absolute(p.lexically_normal());
+	Logging::trace("Normalizing path: '{}' -> '{}'", p, ret);
+	return ret;
 }
 
 std::pair<FilesSet::iterator, bool> FilesSet::insert(value_type const& path) {
@@ -58,10 +61,12 @@ FilesSet FilesSet::invert() const {
 			ret._impl.insert(std::move(normalized_path));
 		}
 	}
+	Logging::debug("SLOW: Inverting FilesSet, ending up with {} items", ret.size());
 	return ret;
 }
 
 FilesSet FilesSet::operator&(FilesSet const& other) const {
+	Logging::trace("FilesSet::operator&");
 	FilesSet ret;
 	for (auto const& item : _impl) {
 		if (other._impl.contains(item)) {
@@ -72,6 +77,7 @@ FilesSet FilesSet::operator&(FilesSet const& other) const {
 }
 
 FilesSet FilesSet::operator|(FilesSet const& other) const {
+	Logging::trace("FilesSet::operator|");
 	FilesSet ret;
 	for (auto const& item : _impl) {
 		ret._impl.insert(item);
@@ -83,6 +89,7 @@ FilesSet FilesSet::operator|(FilesSet const& other) const {
 }
 
 FilesSet FilesSet::operator-(FilesSet const& other) const {
+	Logging::trace("FilesSet::operator-");
 	FilesSet ret;
 	for (auto const& item : _impl) {
 		if (!other._impl.contains(item)) {
