@@ -18,4 +18,7 @@ int main(int const argc, char const* const argv[]) try {
 } catch (Errors::Base const& e) {
 	e.log();
 	return EXIT_FAILURE;
+} catch (...) {
+	spdlog::dump_backtrace();
+	throw;
 }
