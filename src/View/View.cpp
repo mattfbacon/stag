@@ -34,7 +34,7 @@ View::View(std::string_view const a_viewspec, bool const a_clean, bool const alw
 			remove();
 			generate_view();
 		} else {
-			Logging::info("Using existing view for {}", view_path.filename().string());
+			Logging::info("Using existing view for '{}'", view_path.filename().string());
 		}
 	} else {
 		generate_view();

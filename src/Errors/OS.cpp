@@ -7,7 +7,7 @@
 namespace Errors::OS {
 
 void Permissions::log() const {
-	Logging::critical("Missing {} perm on {}", magic_enum::enum_name(permission), path.string());
+	Logging::critical("Missing {} perm on '{}'", magic_enum::enum_name(permission), path);
 }
 
 }  // namespace Errors::OS
