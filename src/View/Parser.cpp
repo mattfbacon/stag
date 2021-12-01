@@ -188,7 +188,7 @@ void log_optimization(std::string_view const source, std::string_view const dest
 void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 	namespace V = ViewspecImpl;
 	root->run_children(optimize_syntax_tree);
-	if (auto* const and_op = dynamic_cast<V::AndOp*>(root.get()); and_op != nullptr) {
+	if (auto* const and_op = dynamic_cast<V::AndOp*>(root.get())) {
 		auto* not_op_left = dynamic_cast<V::NotOp*>(and_op->left.get());
 		auto* not_op_right = dynamic_cast<V::NotOp*>(and_op->right.get());
 		if (not_op_left && not_op_right) {
@@ -204,7 +204,7 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 			log_optimization("a and (not b)", "a subtract b");
 			root = std::make_unique<V::SubtractOp>(std::move(and_op->left), std::move(not_op_right->child));
 		}  // else: a and b -> (leave it alone)
-	} else if (auto* const subtract_op = dynamic_cast<V::SubtractOp*>(root.get()); subtract_op != nullptr) {
+	} else if (auto* const subtract_op = dynamic_cast<V::SubtractOp*>(root.get())) {
 		auto* not_op_minuend = dynamic_cast<V::NotOp*>(subtract_op->minuend.get());
 		auto* not_op_subtrahend = dynamic_cast<V::NotOp*>(subtract_op->subtrahend.get());
 		if (not_op_minuend && not_op_subtrahend) {
@@ -220,7 +220,7 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 			log_optimization("a minus (not b)", "a and b");
 			root = std::make_unique<V::AndOp>(std::move(subtract_op->minuend), std::move(not_op_subtrahend->child));
 		}  // else: a minus b -> (leave it alone)
-	} else if (auto* const or_op = dynamic_cast<V::OrOp*>(root.get()); or_op != nullptr) {
+	} else if (auto* const or_op = dynamic_cast<V::OrOp*>(root.get())) {
 		auto* not_op_left = dynamic_cast<V::NotOp*>(or_op->left.get());
 		auto* not_op_right = dynamic_cast<V::NotOp*>(or_op->right.get());
 		if (not_op_left && not_op_right) {
@@ -238,7 +238,7 @@ void optimize_syntax_tree(std::unique_ptr<Viewspec>& root) {
 			auto new_subtract_op = std::make_unique<V::SubtractOp>(std::move(not_op_right->child), std::move(or_op->left));
 			root = std::make_unique<V::NotOp>(std::move(new_subtract_op));
 		}  // else: a or b -> (leave it alone)
-	} else if (auto* const not_op = dynamic_cast<V::NotOp*>(root.get()); not_op != nullptr) {
+	} else if (auto* const not_op = dynamic_cast<V::NotOp*>(root.get())) {
 		auto const not_op_child = dynamic_cast<V::NotOp*>(not_op->child.get());
 		if (not_op_child) {
 			log_optimization("not (not a)", "a");
