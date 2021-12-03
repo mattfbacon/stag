@@ -4,6 +4,7 @@
 #include "ArgParser.hpp"
 #include "Callbacks.hpp"
 #include "Errors/Base.hpp"
+#include "Errors/Commands.hpp"
 #include "Filesystem.hpp"
 #include "Logging.hpp"
 
@@ -12,6 +13,9 @@
 int main(int const argc, char const* const argv[]) try {
 	Callbacks callbacks;
 	ArgParser::parse(argc, argv, callbacks);
+	if (!callbacks.command_callbacks) {
+		throw Errors::Commands::None{};
+	}
 	Filesystem::ensure_stagspace();
 	callbacks.run();
 	return EXIT_SUCCESS;
